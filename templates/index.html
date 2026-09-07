@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laptop Price Estimator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="page">
+
+  <header class="site-header">
+    <h1>Laptop price estimator</h1>
+    <p>Configure a build below and get a price estimate from the trained model.</p>
+  </header>
+
+  <main class="layout">
+
+    <!-- ============ CONFIGURE PANEL ============ -->
+    <section class="panel configure-panel" aria-label="Configure your laptop">
+
+      <div class="field-group">
+        <div class="field">
+          <label for="company">Brand</label>
+          <select id="company" name="company">
+            {% for c in companies %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="type">Type</label>
+          <select id="type" name="type">
+            {% for t in types %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field">
+          <label for="ram">RAM</label>
+          <select id="ram" name="ram">
+            {% for r in ram_options %}<option value="{{ r }}">{{ r }} GB</option>{% endfor %}
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="weight">Weight</label>
+          <div class="unit-input">
+            <input type="number" id="weight" name="weight" min="0.5" max="6" step="0.01" value="2.1">
+            <span class="unit">kg</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field toggle-field">
+          <label>Touchscreen</label>
+          <div class="segmented" data-target="touchscreen">
+            <button type="button" class="seg-btn" data-value="No">No</button>
+            <button type="button" class="seg-btn active" data-value="Yes">Yes</button>
+          </div>
+        </div>
+
+        <div class="field toggle-field">
+          <label>IPS panel</label>
+          <div class="segmented" data-target="ips">
+            <button type="button" class="seg-btn" data-value="No">No</button>
+            <button type="button" class="seg-btn active" data-value="Yes">Yes</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="screen_size">
+          Screen size <span class="value-readout" id="screen_size_readout">13.0"</span>
+        </label>
+        <input type="range" id="screen_size" name="screen_size"
+               min="10" max="18" step="0.1" value="13.0">
+      </div>
+
+      <div class="field">
+        <label for="resolution">Screen resolution</label>
+        <select id="resolution" name="resolution">
+          {% for r in resolution_options %}<option value="{{ r }}">{{ r }}</option>{% endfor %}
+        </select>
+      </div>
+
+      <div class="field-group">
+        <div class="field">
+          <label for="cpu">CPU</label>
+          <select id="cpu" name="cpu">
+            {% for c in cpus %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="gpu">GPU</label>
+          <select id="gpu" name="gpu">
+            {% for g in gpus %}<option value="{{ g }}">{{ g }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field">
+          <label for="hdd">HDD</label>
+          <select id="hdd" name="hdd">
+            {% for h in hdd_options %}<option value="{{ h }}">{{ h }} GB</option>{% endfor %}
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="ssd">SSD</label>
+          <select id="ssd" name="ssd">
+            {% for s in ssd_options %}<option value="{{ s }}">{{ s }} GB</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="os">Operating system</label>
+        <select id="os" name="os">
+          {% for o in os_list %}<option value="{{ o }}">{{ o }}</option>{% endfor %}
+        </select>
+      </div>
+
+      <button type="button" id="estimate-btn" class="estimate-btn">
+        Estimate price
+      </button>
+      <p class="error-msg" id="error-msg"></p>
+
+    </section>
+
+    <!-- ============ SPEC SHEET PANEL ============ -->
+    <aside class="panel spec-panel" aria-label="Build summary">
+      <h2>Spec sheet</h2>
+
+      <dl class="spec-list">
+        <div class="spec-row"><dt>Brand</dt><dd id="spec-company">—</dd></div>
+        <div class="spec-row"><dt>Type</dt><dd id="spec-type">—</dd></div>
+        <div class="spec-row"><dt>RAM</dt><dd id="spec-ram">—</dd></div>
+        <div class="spec-row"><dt>Weight</dt><dd id="spec-weight">—</dd></div>
+        <div class="spec-row"><dt>Touchscreen</dt><dd id="spec-touchscreen">—</dd></div>
+        <div class="spec-row"><dt>IPS panel</dt><dd id="spec-ips">—</dd></div>
+        <div class="spec-row"><dt>Display</dt><dd id="spec-display">—</dd></div>
+        <div class="spec-row"><dt>Pixel density</dt><dd id="spec-ppi">—</dd></div>
+        <div class="spec-row"><dt>CPU</dt><dd id="spec-cpu">—</dd></div>
+        <div class="spec-row"><dt>GPU</dt><dd id="spec-gpu">—</dd></div>
+        <div class="spec-row"><dt>Storage</dt><dd id="spec-storage">—</dd></div>
+        <div class="spec-row"><dt>OS</dt><dd id="spec-os">—</dd></div>
+      </dl>
+
+      <div class="price-block">
+        <span class="price-label">Estimated price</span>
+        <div class="price-value" id="price-value">
+          <span class="price-placeholder">— — —</span>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
